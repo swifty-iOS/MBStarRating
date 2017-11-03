@@ -8,36 +8,49 @@
 
 import UIKit
 
-protocol StarRatingViewDelegate: class {
-    func starRating(view: MBStarRatingView, didSelectRating: Double)
+protocol MBStarRatingViewDelegate: class {
+    func starRating(view: MBStarRatingView, didSelectRating rating: Double)
 }
 
+@IBDesignable
 public class MBStarRatingView: UIView {
     
     private weak var _starCollectionView: UICollectionView?
     
     /// Set max allowed rating <Shoule be more than or equal 0...>
-    var maxRating:Int = 5
+    @IBInspectable
+    var maxRating: UInt = 5
     
     /// Set rating value <Should be less than max allowed rating>
-    var rating: Double = 3.5
+    var rating: Double = 3.5 {
+        didSet {
+            reloadRating()
+        }
+    }
     
     /// Make outer of start as Circle
+    @IBInspectable
     var makeCircular: Bool = true
     
     /// Set extra paddig to outer circle and star
     var padding: CGFloat = 5
     
+    fileprivate var _direction: UICollectionViewScrollDirection {
+        return direction1
+    }
     /// Set direction of star
-    var direction: UICollectionViewScrollDirection = .horizontal
+    var direction1: UICollectionViewScrollDirection = .horizontal
     
     /// Set star color for actcive/ ainctive and outwe circle color
-    var activeColor = StarView.Colors.deafultActiveColor
-    var incativeColor = StarView.Colors.defaultInactiveColor
-    var circleColor = UIColor.blue
+    @IBInspectable
+    var activeColor: UIColor = StarView.Colors.deafultActiveColor
+    @IBInspectable
+    var incativeColor: UIColor = StarView.Colors.defaultInactiveColor
+    @IBInspectable
+    var circleColor: UIColor = UIColor.blue
     
     /// Set delegate get selection callback
-    weak var delegate: StarRatingViewDelegate?
+    weak var delegate: MBStarRatingViewDelegate?
     
     private var validRating: Double {
         return min(maxRating.double , max(0, rating))
@@ -45,6 +58,7 @@ public class MBStarRatingView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setNeedsDisplay()
         setup()
     }
     
@@ -54,15 +68,20 @@ public class MBStarRatingView: UIView {
     }
     
     public func reloadRating() {
-        (_starCollectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = direction
+        (_starCollectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = _direction
         _starCollectionView?.reloadData()
+    }
+    
+    public override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        setup()
     }
     
     /// Setup collection view at once
     private func setup() {
         clipsToBounds = true
         let flowLayout =  UICollectionViewFlowLayout()
-        flowLayout.scrollDirection = direction
+        flowLayout.scrollDirection = _direction
         flowLayout.minimumInteritemSpacing = 0
         flowLayout.minimumLineSpacing = 0
         flowLayout.sectionInset = .zero
@@ -73,7 +92,7 @@ public class MBStarRatingView: UIView {
         collectionView.dataSource = self
         _starCollectionView = collectionView
         collectionView.bounces = false
-        collectionView.register(StartCollectionViewCell.self, forCellWithReuseIdentifier: "StartCollectionViewCell")
+        collectionView.register(StarCollectionViewCell.self, forCellWithReuseIdentifier: "StarCollectionViewCell")
     }
     
     override public func layoutSubviews() {
@@ -92,15 +111,34 @@ public class MBStarRatingView: UIView {
     
 }
 
+public class MBStarRatingVerticleView: MBStarRatingView {
+    
+    override var _direction: UICollectionViewScrollDirection { return .vertical }
+    
+    public override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+    }
+}
+
+public class MBStarRatingHorizontalView: MBStarRatingView {
+    
+    override var _direction: UICollectionViewScrollDirection { return .horizontal }
+    
+    public override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+    }
+}
+
+
 
 extension MBStarRatingView: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return maxRating
+        return maxRating.int
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StartCollectionViewCell", for: indexPath) as? StartCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StarCollectionViewCell", for: indexPath) as? StarCollectionViewCell
         cell?.startView?.makeCircular = makeCircular
         cell?.startView?.padding = padding
         cell?.startView?.color = startColor()
@@ -111,7 +149,7 @@ extension MBStarRatingView: UICollectionViewDelegate, UICollectionViewDataSource
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var width: CGFloat = 0
-        if direction == .horizontal {
+        if _direction == .horizontal {
             width = collectionView.bounds.height
         } else {
             width =  collectionView.bounds.width
@@ -128,7 +166,7 @@ extension MBStarRatingView: UICollectionViewDelegate, UICollectionViewDataSource
     }
 }
 
-private class StartCollectionViewCell: UICollectionViewCell {
+private class StarCollectionViewCell: UICollectionViewCell {
     
     weak var startView: StarView?
     
@@ -281,3 +319,8 @@ extension Double {
 }
 
 extension Int { var double: Double { return Double(self) } }
+extension UInt {
+    var double: Double { return Double(self) }
+    var int: Int { return Int(self) }
+    
+}
