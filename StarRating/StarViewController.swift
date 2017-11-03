@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StarViewController: UIViewController, MBStarRatingViewDelegate {
+class StarViewController: UIViewController, MBStarRatingViewDelegate, MBStarDelegate  {
     
     @IBOutlet weak var sliderView: UISlider?
     @IBOutlet weak var labelValue: UILabel?
@@ -17,6 +17,7 @@ class StarViewController: UIViewController, MBStarRatingViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         ratingView?.delegate = self
+        ratingView?.starDelegate = self
         sliderView?.maximumValue = Float(ratingView?.maxRating ?? 0)
         setupDefault()
         // Do any additional setup after loading the view.
@@ -39,9 +40,17 @@ class StarViewController: UIViewController, MBStarRatingViewDelegate {
         labelValue?.text = "Slider value: \(ratingView?.rating ?? 0)"
     }
     
+    
     func starRating(view: MBStarRatingView, didSelectRating rating: Double) {
         labelValue?.text = "Selected value: \(rating)"
         sliderView?.value = Float(rating)
     }
     
+    func starRating(view: MBStarRatingView, fillColor index: Int) -> StarColor {
+        return view.startColor()
+    }
+    
+    func starRating(view: MBStarRatingView, fillDirectionForStarAt index: Int) -> MBStarBezierPath.Direction {
+        return index % 2 == 0 ? .vertical : .horizontal
+    }
 }

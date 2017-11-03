@@ -12,6 +12,12 @@ protocol MBStarRatingViewDelegate: class {
     func starRating(view: MBStarRatingView, didSelectRating rating: Double)
 }
 
+protocol MBStarDelegate: class {
+    func starRating(view: MBStarRatingView, fillDirectionForStarAt index: Int) -> MBStarBezierPath.Direction
+    func starRating(view: MBStarRatingView, fillColor index: Int) -> StarColor
+}
+
+
 @IBDesignable
 public class MBStarRatingView: UIView {
     
@@ -19,24 +25,28 @@ public class MBStarRatingView: UIView {
     
     /// Set max allowed rating <Shoule be more than or equal 0...>
     @IBInspectable
-    var maxRating: UInt = 5
+    var maxRating: UInt = 0
     
     /// Set rating value <Should be less than max allowed rating>
-    var rating: Double = 3.5 {
+    @IBInspectable
+    var rating: Double = 0 {
         didSet {
-            if oldValue <= rating {
-                reloadStar(from: floor(oldValue).int, to: ceil(rating).int)
+            let validOldValue = min(oldValue, maxRating.double)
+            if validOldValue <= rating {
+                reloadStar(from: floor(validOldValue).int, to: ceil(rating).int)
             } else {
-                reloadStar(from: floor(rating).int, to: ceil(oldValue).int)
+                reloadStar(from: floor(rating).int, to: ceil(validOldValue).int)
             }
         }
     }
     
     private func reloadStar(from: Int, to: Int) {
-     
+        
         var reloadIndexes: [IndexPath] = []
-        for item in from-1..<to {
-            reloadIndexes.append(IndexPath(item: item, section: 0))
+        for item in max(0, from-1)..<to {
+            if item < maxRating {
+                reloadIndexes.append(IndexPath(item: item, section: 0))
+            }
         }
         _starCollectionView?.reloadItems(at: reloadIndexes)
     }
@@ -46,24 +56,28 @@ public class MBStarRatingView: UIView {
     var makeCircular: Bool = true
     
     /// Set extra paddig to outer circle and star
+    @IBInspectable
     var padding: CGFloat = 5
     
-    fileprivate var _direction: UICollectionViewScrollDirection {
+    var _direction: MBStarBezierPath.Direction {
         return direction
     }
     /// Set direction of star
-    var direction: UICollectionViewScrollDirection = .horizontal
+    var direction: MBStarBezierPath.Direction = .horizontal
     
     /// Set star color for actcive/ ainctive and outwe circle color
     @IBInspectable
-    var activeColor: UIColor = StarView.Colors.deafultActiveColor
+    var activeColor: UIColor = StarColor.deafultActiveColor
     @IBInspectable
-    var incativeColor: UIColor = StarView.Colors.defaultInactiveColor
+    var incativeColor: UIColor = StarColor.defaultInactiveColor
     @IBInspectable
     var circleColor: UIColor = UIColor.blue
     
     /// Set delegate get selection callback
     weak var delegate: MBStarRatingViewDelegate?
+    
+    /// Set delegate get selection callback
+    weak var starDelegate: MBStarDelegate?
     
     private var validRating: Double {
         return min(maxRating.double , max(0, rating))
@@ -81,7 +95,7 @@ public class MBStarRatingView: UIView {
     }
     
     public func reloadRating() {
-        (_starCollectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = _direction
+        (_starCollectionView?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = _direction.scrollDirection
         _starCollectionView?.reloadData()
     }
     
@@ -94,7 +108,7 @@ public class MBStarRatingView: UIView {
     private func setup() {
         clipsToBounds = true
         let flowLayout =  UICollectionViewFlowLayout()
-        flowLayout.scrollDirection = _direction
+        flowLayout.scrollDirection = _direction.scrollDirection
         flowLayout.minimumInteritemSpacing = 0
         flowLayout.minimumLineSpacing = 0
         flowLayout.sectionInset = .zero
@@ -114,8 +128,8 @@ public class MBStarRatingView: UIView {
         reloadRating()
     }
     
-    private func startColor() -> StarView.Colors {
-        var color = StarView.Colors()
+    func startColor() -> StarColor {
+        var color = StarColor()
         color.activeColor = activeColor
         color.inactiveColor = incativeColor
         color.circleColor = circleColor
@@ -123,26 +137,6 @@ public class MBStarRatingView: UIView {
     }
     
 }
-
-public class MBStarRatingVerticleView: MBStarRatingView {
-    
-    override var _direction: UICollectionViewScrollDirection { return .vertical }
-    
-    public override func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
-    }
-}
-
-public class MBStarRatingHorizontalView: MBStarRatingView {
-    
-    override var _direction: UICollectionViewScrollDirection { return .horizontal }
-    
-    public override func prepareForInterfaceBuilder() {
-        super.prepareForInterfaceBuilder()
-    }
-}
-
-
 
 extension MBStarRatingView: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
@@ -153,19 +147,26 @@ extension MBStarRatingView: UICollectionViewDelegate, UICollectionViewDataSource
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StarCollectionViewCell", for: indexPath) as? StarCollectionViewCell
         cell?.startView?.makeCircular = makeCircular
-        cell?.startView?.padding = padding
-        cell?.startView?.color = startColor()
+        cell?.startView?.bezierPath.padding = padding
+        if let color = starDelegate?.starRating(view: self, fillColor: indexPath.item) {
+            cell?.startView?.color = color
+        } else {
+            cell?.startView?.color = startColor()
+        }
         cell?.startView?.rating = max(0,min(validRating - indexPath.item.double,1))
+        if let direction = starDelegate?.starRating(view: self, fillDirectionForStarAt: indexPath.item+1) {
+            cell?.startView?.bezierPath.direction = direction
+        } else {
+            cell?.startView?.bezierPath.direction = _direction == .vertical ? .vertical : .horizontal
+        }
         cell?.startView?.update()
         return cell ?? UICollectionViewCell()
     }
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var width: CGFloat = 0
-        if _direction == .horizontal {
-            width = collectionView.bounds.height
-        } else {
-            width =  collectionView.bounds.width
+        if _direction == .horizontal { width = collectionView.bounds.height
+        } else { width =  collectionView.bounds.width
         }
         return CGSize(width: width, height: width)
     }
@@ -192,7 +193,7 @@ private class StarCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        let xyPos = startView?.validPading ?? 0
+        let xyPos = startView?.bezierPath.validPading ?? 0
         let width = bounds.height - (xyPos * 2)
         let newFrame = CGRect(x: xyPos, y: xyPos, width: width, height: width)
         startView?.frame = newFrame
@@ -205,18 +206,20 @@ private class StarCollectionViewCell: UICollectionViewCell {
 
 
 
-private class StarView: UIView {
+fileprivate class StarView: UIView {
     
-    var rating: Double = 0 // <Must be 0...1>
-    var color = Colors()
+    var bezierPath =  MBStarBezierPath()
+    
+    var rating: Double = 0 { didSet { bezierPath.scale = max(0, min(1, rating)) } }
+    
+    var color = StarColor()
     var makeCircular: Bool = true
-    var padding: CGFloat = 0
-    var validPading: CGFloat {
-        return  min(padding, (bounds.width/2)-5)
-    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.bezierPath.size = frame.size
     }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         backgroundColor = .clear
@@ -227,183 +230,54 @@ private class StarView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        bezierPath.size = rect.size
         clipsToBounds = true
         layer.cornerRadius = makeCircular ? rect.height/2 : 0
         color.activeColor.setFill()
-        let activePath = UIBezierPath.activeFillInnerPath(rect: rect, scale: rating, padding: validPading)
+        let activePath = bezierPath.activeFillInnerPath()
         activePath.fill()
         
         color.inactiveColor.setFill()
-        let inactivePath = UIBezierPath.inactiveFillInnerPath(rect: rect, scale: rating, padding: validPading)
+        let inactivePath = bezierPath.inactiveFillInnerPath()
         inactivePath.fill()
         
         // Circle color should not be clear
-        if color.circleColor == UIColor.clear {
-            UIColor.black.setFill()
-        } else {
-            color.circleColor.setFill()
+        if color.circleColor == UIColor.clear { UIColor.black.setFill()
+        } else { color.circleColor.setFill()
         }
+        
         let outerPath = UIBezierPath(rect: rect)
-        outerPath.append(UIBezierPath.starOuterPath(rect: rect, padding: validPading))
+        outerPath.append(bezierPath.starOuterPath())
         outerPath.usesEvenOddFillRule = true
         outerPath.fill()
     }
+}
+
+struct StarColor {
+    var activeColor = deafultActiveColor
+    var inactiveColor = defaultInactiveColor
+    var circleColor = UIColor.black
+    static var deafultActiveColor: UIColor { return UIColor(red: 254/255.0, green: 204/255.0, blue: 57/255.0, alpha: 1) }
+    static var defaultInactiveColor: UIColor { return UIColor(red: 200/255.0, green: 200/255.0, blue: 200/255.0, alpha: 1) }
     
 }
 
-extension StarView {
-    
-    struct Colors {
-        var activeColor = deafultActiveColor
-        var inactiveColor = defaultInactiveColor
-        var circleColor = UIColor.black
-        static var deafultActiveColor: UIColor { return UIColor(red: 254/255.0, green: 204/255.0, blue: 57/255.0, alpha: 1) }
-        static var defaultInactiveColor: UIColor { return UIColor(red: 200/255.0, green: 200/255.0, blue: 200/255.0, alpha: 1) }
-        
-    }
-}
 
-private struct StarBezierPath {
+extension MBStarBezierPath.Direction {
     
-    enum Direction {
-        case verticle, horizontal
-    }
-    
-    var scale:Double = 0
-    var padding: CGFloat = 0
-    var direction: StarBezierPath.Direction
-    
-    init(scale: Double, padding: CGFloat, direction: StarBezierPath.Direction) {
-        self.scale = scale
-        self.padding = padding
-        self.direction = direction
-    }
-    
- func activeFillInnerPath(rect: CGRect) -> UIBezierPath {
-        let yPos = ((rect.width - padding*2) * CGFloat(scale)) + padding
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: padding, y: padding))
-        path.addLine(to: CGPoint(x: yPos, y: padding))
-        path.addLine(to: CGPoint(x: yPos, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: padding, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: padding, y: padding))
-        return path
-    }
-    
-    func inactiveFillInnerPath(rect: CGRect) -> UIBezierPath {
-        let xPos = ((rect.width - padding*2) * CGFloat(scale)) + padding
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: xPos, y: padding))
-        path.addLine(to: CGPoint(x: rect.width - padding, y: padding))
-        path.addLine(to: CGPoint(x: rect.width - padding, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: xPos, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: xPos, y: padding))
-        return path
-    }
-    
-    func starPath(rect: CGRect) -> UIBezierPath {
-        let angle = 144.0
-        let center = CGPoint(x: rect.width/2, y: rect.height/2)
-        let radius = (center.x-padding) * -1
-        var line = CGPoint(x: center.x, y: 0)
-        let path = UIBezierPath()
-        path.move(to: line)
-        for i in 1...5 {
-            var newAngle = (angle * i.double)
-            newAngle = (Double.pi)/(180/newAngle)
-            line =  CGPoint(x: center.x+(radius*(sin(newAngle).cgFloat)), y: center.y+(radius*(cos(newAngle).cgFloat)))
-            path.addLine(to: line)
+    var scrollDirection: UICollectionViewScrollDirection {
+        switch self {
+        case .vertical: return .vertical
+        default: return .horizontal
         }
-        return path
-    }
-    
-     func starOuterPath(rect: CGRect) -> UIBezierPath {
-        
-        let angle = 36.0
-        let center = CGPoint(x: rect.width/2, y: rect.height/2)
-        let radius = (center.x - padding) * -1
-        var line = CGPoint(x: center.x, y: padding)
-        let path = UIBezierPath()
-        path.move(to: line)
-        for i in 1...10 {
-            var newAngle = (angle * i.double)
-            newAngle = (Double.pi)/(180/newAngle)
-            if i%2 == 0 {
-                line =  CGPoint(x: center.x+(radius*(sin(newAngle).cgFloat)), y: center.y+(radius*(cos(newAngle).cgFloat)))
-            } else {
-                line =  CGPoint(x: center.x+(radius/3*(sin(newAngle).cgFloat)), y: center.y+(radius/3*(cos(newAngle).cgFloat)))
-            }
-            path.addLine(to: line)
-        }
-        return path
-    }
-}
-
-private extension UIBezierPath {
-    
-    static func activeFillInnerPath(rect: CGRect, scale: Double, padding: CGFloat) -> UIBezierPath {
-        let yPos = ((rect.width - padding*2) * CGFloat(scale)) + padding
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: padding, y: padding))
-        path.addLine(to: CGPoint(x: yPos, y: padding))
-        path.addLine(to: CGPoint(x: yPos, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: padding, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: padding, y: padding))
-        return path
-    }
-    
-    static func inactiveFillInnerPath(rect: CGRect, scale: Double, padding: CGFloat) -> UIBezierPath {
-        let xPos = ((rect.width - padding*2) * CGFloat(scale)) + padding
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: xPos, y: padding))
-        path.addLine(to: CGPoint(x: rect.width - padding, y: padding))
-        path.addLine(to: CGPoint(x: rect.width - padding, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: xPos, y: rect.height - padding))
-        path.addLine(to: CGPoint(x: xPos, y: padding))
-        return path
-    }
-    
-    static func starPath(rect: CGRect, padding: CGFloat) -> UIBezierPath {
-        let angle = 144.0
-        let center = CGPoint(x: rect.width/2, y: rect.height/2)
-        let radius = (center.x-padding) * -1
-        var line = CGPoint(x: center.x, y: 0)
-        let path = UIBezierPath()
-        path.move(to: line)
-        for i in 1...5 {
-            var newAngle = (angle * i.double)
-            newAngle = (Double.pi)/(180/newAngle)
-            line =  CGPoint(x: center.x+(radius*(sin(newAngle).cgFloat)), y: center.y+(radius*(cos(newAngle).cgFloat)))
-            path.addLine(to: line)
-        }
-        return path
-    }
-    
-    static func starOuterPath(rect: CGRect, padding: CGFloat) -> UIBezierPath {
-        
-        let angle = 36.0
-        let center = CGPoint(x: rect.width/2, y: rect.height/2)
-        let radius = (center.x - padding) * -1
-        var line = CGPoint(x: center.x, y: padding)
-        let path = UIBezierPath()
-        path.move(to: line)
-        for i in 1...10 {
-            var newAngle = (angle * i.double)
-            newAngle = (Double.pi)/(180/newAngle)
-            if i%2 == 0 {
-                line =  CGPoint(x: center.x+(radius*(sin(newAngle).cgFloat)), y: center.y+(radius*(cos(newAngle).cgFloat)))
-            } else {
-                line =  CGPoint(x: center.x+(radius/3*(sin(newAngle).cgFloat)), y: center.y+(radius/3*(cos(newAngle).cgFloat)))
-            }
-            path.addLine(to: line)
-        }
-        return path
     }
 }
 
 extension Double {
     var cgFloat: CGFloat { return CGFloat(self) }
     var int: Int { return Int(self) }
+    var angle: Double { return (.pi*self)/180 }
 }
 
 extension Int { var double: Double { return Double(self) } }
@@ -412,3 +286,4 @@ extension UInt {
     var int: Int { return Int(self) }
     
 }
+

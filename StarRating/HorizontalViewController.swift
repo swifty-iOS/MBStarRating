@@ -21,6 +21,11 @@ class HorizontalViewController: StarViewController {
         // Dispose of any resources that can be recreated.
     }
     
-   
-    
+    @IBAction func numberStarValueChanged(_ sender: UISlider) {
+        ratingView?.maxRating = UInt(round(sender.value))
+        sliderView?.maximumValue = round(sender.value)
+        sliderView?.value = Float(ratingView?.rating ?? 0)
+        
+        ratingView?.reloadRating()
+    }
 }

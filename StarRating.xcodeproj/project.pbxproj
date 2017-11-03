@@ -16,6 +16,9 @@
 		1BA2DC001F9B4B13000A341A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1BA2DBFF1F9B4B13000A341A /* Assets.xcassets */; };
 		1BA2DC031F9B4B13000A341A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1BA2DC011F9B4B13000A341A /* LaunchScreen.storyboard */; };
 		1BA2DC0B1F9B4B43000A341A /* MBStarRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA2DC0A1F9B4B43000A341A /* MBStarRatingView.swift */; };
+		1BD61D031FAC582D0049DE29 /* MBStarBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD61D021FAC582D0049DE29 /* MBStarBezierPath.swift */; };
+		1BD61D071FAC5B7C0049DE29 /* MBStarRatingVerticalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD61D061FAC5B7C0049DE29 /* MBStarRatingVerticalView.swift */; };
+		1BD61D091FAC5C310049DE29 /* MBStarRatingHorizontalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD61D081FAC5C310049DE29 /* MBStarRatingHorizontalView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +33,9 @@
 		1BA2DC021F9B4B13000A341A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1BA2DC041F9B4B13000A341A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1BA2DC0A1F9B4B43000A341A /* MBStarRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBStarRatingView.swift; sourceTree = "<group>"; };
+		1BD61D021FAC582D0049DE29 /* MBStarBezierPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBStarBezierPath.swift; sourceTree = "<group>"; };
+		1BD61D061FAC5B7C0049DE29 /* MBStarRatingVerticalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBStarRatingVerticalView.swift; sourceTree = "<group>"; };
+		1BD61D081FAC5C310049DE29 /* MBStarRatingHorizontalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBStarRatingHorizontalView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +75,9 @@
 				1B5EAB361FAC15FA0030BF4D /* StarViewController.swift */,
 				1BA2DBFC1F9B4B13000A341A /* Main.storyboard */,
 				1BA2DC0A1F9B4B43000A341A /* MBStarRatingView.swift */,
+				1BD61D061FAC5B7C0049DE29 /* MBStarRatingVerticalView.swift */,
+				1BD61D081FAC5C310049DE29 /* MBStarRatingHorizontalView.swift */,
+				1BD61D021FAC582D0049DE29 /* MBStarBezierPath.swift */,
 				1BA2DBFF1F9B4B13000A341A /* Assets.xcassets */,
 				1BA2DC011F9B4B13000A341A /* LaunchScreen.storyboard */,
 				1BA2DC041F9B4B13000A341A /* Info.plist */,
@@ -152,7 +161,10 @@
 				1BA2DBFB1F9B4B13000A341A /* ViewController.swift in Sources */,
 				1BA2DBF91F9B4B13000A341A /* AppDelegate.swift in Sources */,
 				1BA2DC0B1F9B4B43000A341A /* MBStarRatingView.swift in Sources */,
+				1BD61D091FAC5C310049DE29 /* MBStarRatingHorizontalView.swift in Sources */,
+				1BD61D071FAC5B7C0049DE29 /* MBStarRatingVerticalView.swift in Sources */,
 				1B5EAB371FAC15FA0030BF4D /* StarViewController.swift in Sources */,
+				1BD61D031FAC582D0049DE29 /* MBStarBezierPath.swift in Sources */,
 				1B5EAB351FAC04540030BF4D /* HorizontalViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -74,7 +74,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="leW-Jo-Ik0" customClass="MBStarRatingVerticleView" customModule="StarRating" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="leW-Jo-Ik0" customClass="MBStarRatingVerticalView" customModule="StarRating" customModuleProvider="target">
                                 <rect key="frame" x="20" y="40" width="80" height="400"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -85,10 +85,12 @@
                                     <userDefinedRuntimeAttribute type="number" keyPath="maxRating">
                                         <integer key="value" value="5"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="Direct">
-                                        <integer key="value" value="0"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="padding">
+                                        <real key="value" value="10"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="verticleDirection" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="rating">
+                                        <real key="value" value="3.5"/>
+                                    </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="ffd-cn-7hl">
@@ -151,7 +153,7 @@
                                 </connections>
                             </slider>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P8I-rQ-55R">
-                                <rect key="frame" x="20" y="273" width="280" height="21"/>
+                                <rect key="frame" x="20" y="263" width="280" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -166,37 +168,57 @@
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="makeCircular" value="NO"/>
                                     <userDefinedRuntimeAttribute type="color" keyPath="activeColor">
-                                        <color key="value" red="0.79871803519999995" green="0.32847332950000002" blue="0.1921885461" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="value" red="0.82599806789999997" green="0.34032469990000003" blue="0.2000281364" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="incativeColor">
-                                        <color key="value" red="0.1137254902" green="0.49803921569999998" blue="0.83137254900000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="value" red="0.99607843139999996" green="0.80000000000000004" blue="0.2274509804" alpha="1" colorSpace="calibratedRGB"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="color" keyPath="circleColor">
                                         <color key="value" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="maxRating">
-                                        <integer key="value" value="5"/>
+                                        <integer key="value" value="4"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="Direct">
-                                        <integer key="value" value="0"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="padding">
+                                        <real key="value" value="2"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="verticleDirection" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="rating">
+                                        <real key="value" value="2.5"/>
+                                    </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="4" minValue="0.0" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="NDE-WW-gbR">
+                                <rect key="frame" x="18" y="314" width="284" height="31"/>
+                                <connections>
+                                    <action selector="numberStarValueChanged:" destination="eyM-KD-zGS" eventType="valueChanged" id="SRW-2k-QtV"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Change number of stars." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="omi-xg-efq">
+                                <rect key="frame" x="20" y="354" width="280" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="dan-Jb-dnm" firstAttribute="top" secondItem="Lei-TI-rTi" secondAttribute="top" constant="100" id="04W-gB-1h1"/>
                             <constraint firstItem="dan-Jb-dnm" firstAttribute="leading" secondItem="Lei-TI-rTi" secondAttribute="leading" constant="20" id="0Fh-By-BhA"/>
+                            <constraint firstItem="NDE-WW-gbR" firstAttribute="leading" secondItem="Lei-TI-rTi" secondAttribute="leading" constant="20" id="DM5-zD-cc4"/>
                             <constraint firstItem="RbJ-Ru-PWT" firstAttribute="width" secondItem="dan-Jb-dnm" secondAttribute="width" id="HxB-3q-Epu"/>
                             <constraint firstItem="gjT-H9-6AM" firstAttribute="centerX" secondItem="Lei-TI-rTi" secondAttribute="centerX" id="L2o-2O-wXT"/>
                             <constraint firstItem="RbJ-Ru-PWT" firstAttribute="centerX" secondItem="dan-Jb-dnm" secondAttribute="centerX" id="LpO-9P-fye"/>
+                            <constraint firstItem="Lei-TI-rTi" firstAttribute="trailing" secondItem="omi-xg-efq" secondAttribute="trailing" constant="20" id="Pfl-cw-uFD"/>
                             <constraint firstAttribute="trailing" secondItem="dan-Jb-dnm" secondAttribute="trailing" constant="20" id="Riq-NB-JMd"/>
+                            <constraint firstItem="Lei-TI-rTi" firstAttribute="trailing" secondItem="NDE-WW-gbR" secondAttribute="trailing" constant="20" id="TZy-LR-uGr"/>
                             <constraint firstItem="P8I-rQ-55R" firstAttribute="width" secondItem="RbJ-Ru-PWT" secondAttribute="width" id="aB5-4m-bnp"/>
-                            <constraint firstItem="P8I-rQ-55R" firstAttribute="top" secondItem="RbJ-Ru-PWT" secondAttribute="bottom" constant="40" id="fhm-oz-P16"/>
+                            <constraint firstItem="NDE-WW-gbR" firstAttribute="top" secondItem="P8I-rQ-55R" secondAttribute="bottom" constant="30" id="c9y-zB-bVz"/>
+                            <constraint firstItem="P8I-rQ-55R" firstAttribute="top" secondItem="RbJ-Ru-PWT" secondAttribute="bottom" constant="30" id="fhm-oz-P16"/>
                             <constraint firstItem="P8I-rQ-55R" firstAttribute="centerX" secondItem="RbJ-Ru-PWT" secondAttribute="centerX" id="hvE-aL-37J"/>
                             <constraint firstItem="gjT-H9-6AM" firstAttribute="top" secondItem="piX-jw-4i0" secondAttribute="top" constant="20" id="ogt-re-ePA"/>
                             <constraint firstItem="RbJ-Ru-PWT" firstAttribute="top" secondItem="dan-Jb-dnm" secondAttribute="bottom" constant="42" id="qBT-fP-LAJ"/>
+                            <constraint firstItem="omi-xg-efq" firstAttribute="leading" secondItem="Lei-TI-rTi" secondAttribute="leading" constant="20" id="xAk-Nb-JGu"/>
+                            <constraint firstItem="omi-xg-efq" firstAttribute="top" secondItem="NDE-WW-gbR" secondAttribute="bottom" constant="10" id="z0U-hk-UIu"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Lei-TI-rTi"/>
                     </view>
