@@ -26,6 +26,7 @@ class StarViewController: UIViewController, MBStarRatingViewDelegate {
         ratingView?.rating = (Double(ratingView?.maxRating ?? 0))/2
         labelValue?.text = "Current value: \(ratingView?.rating ?? 0)"
         sliderView?.value = Float(ratingView?.rating ?? 0)
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -36,7 +37,6 @@ class StarViewController: UIViewController, MBStarRatingViewDelegate {
     @IBAction func valueChanged(_ sender: UISlider) {
         ratingView?.rating = Double(sender.value)
         labelValue?.text = "Slider value: \(ratingView?.rating ?? 0)"
-
     }
     
     func starRating(view: MBStarRatingView, didSelectRating rating: Double) {
