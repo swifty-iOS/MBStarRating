@@ -11,7 +11,7 @@ import UIKit
 
 public struct MBStarBezierPath {
     
-    enum Direction {
+    public enum Direction {
         case vertical, horizontal
         var path: FillPathProtocol {
             switch self {

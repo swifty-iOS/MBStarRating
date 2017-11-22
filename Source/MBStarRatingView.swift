@@ -8,11 +8,11 @@
 
 import UIKit
 
-protocol MBStarRatingViewDelegate: class {
+public protocol MBStarRatingViewDelegate: class {
     func starRating(view: MBStarRatingView, didSelectRating rating: Double)
 }
 
-protocol MBStarDelegate: class {
+public protocol MBStarDelegate: class {
     func starRating(view: MBStarRatingView, fillDirectionForStarAt index: Int) -> MBStarBezierPath.Direction
     func starRating(view: MBStarRatingView, fillColor index: Int) -> StarColor
 }
@@ -25,11 +25,11 @@ public class MBStarRatingView: UIView {
     
     /// Set max allowed rating <Shoule be more than or equal 0...>
     @IBInspectable
-    var maxRating: UInt = 0
+    public var maxRating: UInt = 0
     
     /// Set rating value <Should be less than max allowed rating>
     @IBInspectable
-    var rating: Double = 0 {
+    public var rating: Double = 0 {
         didSet {
             let validOldValue = min(oldValue, maxRating.double)
             if validOldValue <= rating {
@@ -53,31 +53,31 @@ public class MBStarRatingView: UIView {
     
     /// Make outer of start as Circle
     @IBInspectable
-    var makeCircular: Bool = true
+    public var makeCircular: Bool = true
     
     /// Set extra paddig to outer circle and star
     @IBInspectable
-    var padding: CGFloat = 5
+    public var padding: CGFloat = 5
     
     var _direction: MBStarBezierPath.Direction {
         return direction
     }
     /// Set direction of star
-    var direction: MBStarBezierPath.Direction = .horizontal
+    public var direction: MBStarBezierPath.Direction = .horizontal
     
     /// Set star color for actcive/ ainctive and outwe circle color
     @IBInspectable
-    var activeColor: UIColor = StarColor.deafultActiveColor
+    public var activeColor: UIColor = StarColor.deafultActiveColor
     @IBInspectable
-    var incativeColor: UIColor = StarColor.defaultInactiveColor
+    public var incativeColor: UIColor = StarColor.defaultInactiveColor
     @IBInspectable
-    var circleColor: UIColor = UIColor.blue
+    public var circleColor: UIColor = UIColor.blue
     
     /// Set delegate get selection callback
-    weak var delegate: MBStarRatingViewDelegate?
+    public weak var delegate: MBStarRatingViewDelegate?
     
     /// Set delegate get selection callback
-    weak var starDelegate: MBStarDelegate?
+    public weak var starDelegate: MBStarDelegate?
     
     private var validRating: Double {
         return min(maxRating.double , max(0, rating))
@@ -254,7 +254,7 @@ fileprivate class StarView: UIView {
     }
 }
 
-struct StarColor {
+public struct StarColor {
     var activeColor = deafultActiveColor
     var inactiveColor = defaultInactiveColor
     var circleColor = UIColor.black
